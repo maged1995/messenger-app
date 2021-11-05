@@ -1,0 +1,10 @@
+Django
+djangorestframework
+psycopg2-binary
+django-probes
+pillow
+django-redis
+django-debug-toolbar
+redis
+psycopg2
+django-environ

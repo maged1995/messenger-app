@@ -1,0 +1,29 @@
+version: "3.8" # optional since v1.27.0
+services:
+  redis:
+    container_name: "redis"
+    image: "redis:3.2.0"
+    ports:
+      - "6378:6379"
+    volumes:
+      - ./redisdata:/data
+  db:
+    image: postgres:13.3
+    volumes:
+      - ./db_data:/var/lib/postgresql/data
+    env_file:
+      - ./.env
+  app:
+    build: .
+    restart: always
+    image: 371713243830.dkr.ecr.us-east-1.amazonaws.com/django-app:1.0.3
+    command: bash -c "cd /app && python3 manage.py wait_for_database && python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:3000"
+    env_file:
+      - ./.env
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis

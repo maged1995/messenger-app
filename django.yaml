@@ -1,0 +1,250 @@
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: django-deployment
+#   labels:
+#     app: django
+# spec:
+#   replicas: 2
+#   selector:
+#     matchLabels:
+#       app: django
+#   template:
+#     metadata:
+#       labels:
+#         app: django
+#     spec:
+#       imagePullSecrets:
+#         - name: secret-registry
+#       # volumes:
+#       #   - name: django-volume
+#       #     persistentVolumeClaim:
+#       #       claimName: django-volume
+#       # restartPolicy: Always
+#       containers:
+#         - name: django-app
+#           image: 371713243830.dkr.ecr.us-east-1.amazonaws.com/django-app:1.0.3
+#           command: ["/bin/sh", "-c"]
+#           args:
+#             [
+#               "cd /app && python3 manage.py wait_for_database && python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:3000",
+#             ]
+#           imagePullPolicy: Always
+#           resources:
+#           ports:
+#             - containerPort: 8000
+#           env:
+#             - name: POSTGRES_DB
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: messenger-secrets
+#                   key: postgres-db
+#             - name: POSTGRES_USER
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: messenger-secrets
+#                   key: postgres-user
+#             - name: POSTGRES_PASSWORD
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: messenger-secrets
+#                   key: postgres-pass
+#             - name: PGDATABASE
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: messenger-secrets
+#                   key: pg-database
+#             - name: PGUSER
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: messenger-secrets
+#                   key: pg-user
+#             - name: PGPASSWORD
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: messenger-secrets
+#                   key: pg-password
+#             - name: DB_PORT
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: messenger-secrets
+#                   key: db-port
+#             - name: DB_HOST
+#               valueFrom:
+#                 configMapKeyRef:
+#                   name: messenger-configmap
+#                   key: database_url
+#             - name: REDIS_URL
+#               valueFrom:
+#                 configMapKeyRef:
+#                   name: messenger-configmap
+#                   key: redis_url
+#           volumeMounts:
+#             - name: django-volume
+#               mountPath: /app
+#       volumes:
+#         - name: django-volume
+#           hostPath:
+#             path: .
+#             type: Directory
+# ---
+apiVersion: apps/v1
+kind: pod
+metadata:
+  name: django-pod
+  labels:
+    app: django
+spec:
+  volumes:
+    - name: django-pv-storage
+      persistentVolumeClaim:
+        claimName: django-pv-claim
+  containers:
+    - name: django-pv-container
+      image: 371713243830.dkr.ecr.us-east-1.amazonaws.com/django-app:1.0.3
+      ports:
+        - containerPort: 3000
+          # name: "http-server"
+      command: ["/bin/sh", "-c"]
+      args:
+        [
+          "cd /app && python3 manage.py wait_for_database && python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:3000",
+        ]
+      imagePullPolicy: Always
+      volumeMounts:
+        - name: django-volume
+          mountPath: /app
+  imagePullSecrets:
+    - name: secret-registry
+
+      env:
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: messenger-secrets
+              key: postgres-db
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: messenger-secrets
+              key: postgres-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: messenger-secrets
+              key: postgres-pass
+        - name: PGDATABASE
+          valueFrom:
+            secretKeyRef:
+              name: messenger-secrets
+              key: pg-database
+        - name: PGUSER
+          valueFrom:
+            secretKeyRef:
+              name: messenger-secrets
+              key: pg-user
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: messenger-secrets
+              key: pg-password
+        - name: DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: messenger-secrets
+              key: db-port
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: messenger-configmap
+              key: database_url
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: messenger-configmap
+              key: redis_url
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: django-pod
+spec:
+  selector:
+    app: django
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      nodePort: 30000
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  # creationTimestamp: null
+  name: django-pv-claim
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+status: {}
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: django-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: .
+# ---
+# kind: PersistentVolume
+# apiVersion: v1
+# metadata:
+#   name: django-volume
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   capacity:
+#     storage: 5Gi
+#   hostPath:
+#     path: /app
+# ---
+# kind: StorageClass
+# apiVersion: storage.k8s.io/v1
+# metadata:
+#   name: app-local-storage
+# provisioner: kubernetes.io/no-provisioner
+# volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: django-volume
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage
+  local:
+    path: ./messenger_api
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - example-node

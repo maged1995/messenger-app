@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-deployment
+  labels:
+    app: django
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: django
+  template:
+    metadata:
+      labels:
+        app: django
+    spec:
+      containers:
+        - name: django
+          image: 371713243830.dkr.ecr.us-east-1.amazonaws.com/django-app
+          imagePullPolicy: Always
+          resources:
+          ports:
+            - containerPort: 8000
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: messenger-secrets
+                  key: postgres-db
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: messenger-secrets
+                  key: postgres-user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: messenger-secrets
+                  key: postgres-pass
+            - name: PGDATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: messenger-secrets
+                  key: pg-database
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: messenger-secrets
+                  key: pg-user
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: messenger-secrets
+                  key: pg-password
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: messenger-secrets
+                  key: db-port
+            - name: REDIS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: messenger-configmap
+                  key: redis_url
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: django-service
+spec:
+  selector:
+    app: django
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
