@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-aq_41i%ld2(-g78_8c=2jmww!mw88l$wdr#^=mw+@4_n17qow^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.49.2']
+ALLOWED_HOSTS = ['192.168.49.2', 'localhost']
 
 
 # Application definition
@@ -93,15 +93,15 @@ DATABASES = {
 }
 
 
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": env("REDIS_URL"),
-#         "OPTIONS": {
-#             "CLIENT_CLASS": "django_redis.client.DefaultClient"
-#         },
-#     }
-# }
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": env("REDIS_URL"),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+        },
+    }
+}
 
 
 # Password validation

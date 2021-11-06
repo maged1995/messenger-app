@@ -7,6 +7,8 @@ RUN apt-get update \
 
 WORKDIR /app
 
+VOLUME .:/app
+
 ENV VIRTUAL_ENV=/opt/venv
 RUN python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
@@ -17,5 +19,5 @@ COPY requirements.txt ./
 RUN . /opt/venv/bin/activate && pip install -r requirements.txt
 COPY . .
 
-EXPOSE 8000
-# CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+EXPOSE 8000 
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

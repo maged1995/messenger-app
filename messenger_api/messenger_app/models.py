@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 # Create your models here.
 
 class ChatUser(auth.models.User):
-    user_image = models.ImageField(height_field=None, width_field=None, max_length=100)
+    user_image = models.ImageField(upload_to="static", height_field=None, width_field=None, max_length=100)
 
 
 class Chat(models.Model):

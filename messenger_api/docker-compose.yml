@@ -16,7 +16,7 @@ services:
   app:
     build: .
     restart: always
-    image: 371713243830.dkr.ecr.us-east-1.amazonaws.com/django-app:1.0.3
+    image: maged1995/django-app:latest
     command: bash -c "cd /app && python3 manage.py wait_for_database && python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:3000"
     env_file:
       - ./.env
