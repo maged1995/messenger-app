@@ -1,5 +1,5 @@
 import argparse
-from commands import ci_failure_message, ci_success_message
+from messages import ci_failure_message, ci_success_message
 
 parser = argparse.ArgumentParser()
 parser.add_argument('command')
