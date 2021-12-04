@@ -6,15 +6,15 @@ from senders.channels_sender import ChannelsSender
 from senders.individuals_sender import IndividualsSender
 from messages import ci_failure_message, ci_success_message
 
-async def send(bot):
+async def send(bot, message):
     await bot.login()
     if args.individuals:
         sender = IndividualsSender(bot)
-        await sender.sendMessage(args.individuals[0].split(','))
+        await sender.sendMessage(message, args.individuals[0].split(','))
     if args.channels:
         sender = ChannelsSender(bot)
-        await sender.sendMessage(args.channels[0].split(','))
-    await bot.logout()
+        await sender.sendMessage(message, args.channels[0].split(','))
+    await bot.close()
 
 parser = argparse.ArgumentParser()
 parser.add_argument('command')
@@ -37,4 +37,4 @@ if not args.command in commands:
 c = commands[args.command]
 print(c)
 bot = BotSender(token=bot_token, guild_id=guild_id)
-asyncio.run(send(bot))
+asyncio.run(send(bot, c))
