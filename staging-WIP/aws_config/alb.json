@@ -1,0 +1,4 @@
+{
+  "ParameterKey": "LoadBalancerARN",
+  "ParameterValue": "arn:aws:elasticloadbalancing:eu-central-1:371713243830:loadbalancer/app/k8s-default-minimali-4a02145617/7f38b6650910c7da"
+}

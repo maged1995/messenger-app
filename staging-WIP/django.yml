@@ -1,0 +1,120 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: static-assets-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: django-storage
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/var/lib/django-data"
+    type: DirectoryOrCreate
+  persistentVolumeReclaimPolicy: Retain
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: static-assets-volume-claim
+spec:
+  storageClassName: django-storage
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2G
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: django-pod
+  labels:
+    app: django
+spec:
+  nodeSelector:
+    server-name: serverA
+  imagePullSecrets:
+    - name: secret-registry
+  restartPolicy: Always
+  volumes:
+    - name: django-static-data
+      persistentVolumeClaim:
+        claimName: static-assets-volume-claim
+  containers:
+    - name: django-app
+      image: maged1995/django-app:latest
+      volumeMounts:
+        - name: django-static-data
+          mountPath: /app/static
+          subPath: django_files
+      command:
+        [
+          "/bin/sh",
+          "-c",
+          "cd /app && python3 manage.py wait_for_database && python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:3000",
+        ]
+      imagePullPolicy: Always
+      resources:
+      ports:
+        - containerPort: 3000
+      env:
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: messenger-secrets
+              key: postgres-db
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: messenger-secrets
+              key: postgres-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: messenger-secrets
+              key: postgres-pass
+        - name: PGDATABASE
+          valueFrom:
+            secretKeyRef:
+              name: messenger-secrets
+              key: pg-database
+        - name: PGUSER
+          valueFrom:
+            secretKeyRef:
+              name: messenger-secrets
+              key: pg-user
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: messenger-secrets
+              key: pg-password
+        - name: DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: messenger-secrets
+              key: db-port
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: messenger-configmap
+              key: database_url
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: messenger-configmap
+              key: redis_url
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: django-service
+spec:
+  selector:
+    app: django
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
