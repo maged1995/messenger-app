@@ -12,11 +12,9 @@ jobs:
       - python/install-packages:
           pip-dependency-file: ./messenger_api/requirements.txt
           pkg-manager: pip
-      - python/install-packages:
-          args: pylint
-          pkg-manager: pip
       - run:
           command: |
+            pip install pylint
             pylint messenger_api/*
           name: Test
   eksctl-install:
