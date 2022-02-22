@@ -7,7 +7,7 @@ orbs:
 jobs:
   test-lint:
     docker:
-      - image: cimg/python:3.10.1
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - run:
