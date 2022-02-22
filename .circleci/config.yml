@@ -6,16 +6,15 @@ orbs:
 
 jobs:
   test-lint:
-    executor: python/default
+    docker:
+      - image: cimg/python:3.10.1
     steps:
       - checkout
-      - python/install-packages:
-          pip-dependency-file: ./messenger_api/requirements.txt
-          pkg-manager: pip
       - run:
           command: |
-            pip install pylint
-            pylint messenger_api/*
+            sudo pip install pipenv
+            pipenv install -r ./messenger_api/requirements.txt
+            pipenv run pylint messenger_api/*
           name: Test
   eksctl-install:
     docker:
