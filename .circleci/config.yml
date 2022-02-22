@@ -74,6 +74,4 @@ workflows:
   test:
     jobs:
       - test-lint
-      - eksctl-install
-      - create-deployment:
-          requires: [eksctl-install]
+      - create-deployment
