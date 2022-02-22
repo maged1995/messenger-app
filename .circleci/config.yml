@@ -12,9 +12,8 @@ jobs:
       - checkout
       - run:
           command: |
-            pip install pipenv
-            pipenv install pylint
-            pipenv run pylint messenger_api/*
+            pip install pylint
+            pylint messenger_api/*
           name: Test
   eksctl-install:
     docker:
