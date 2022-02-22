@@ -39,7 +39,7 @@ jobs:
 
             python3 -m venv venv
 
-            /opt/venv/bin/python3 -m pip install --upgrade pip
+            venv/bin/python3 -m pip install --upgrade pip
             . venv/bin/activate
             pip install -r messenger_api/requirements.txt
             pip install ast
