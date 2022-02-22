@@ -58,7 +58,7 @@ jobs:
       - kubernetes/install
       - run:
           command: |
-            apt install -y tar gzip jq
+            apt install --allow jq
       - run:
           command: |
             curl --location "https://github.com/weaveworks/eksctl/releases/download/v0.73.0/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp
