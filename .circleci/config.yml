@@ -57,7 +57,8 @@ jobs:
             sudo mv /tmp/eksctl /usr/local/bin
             eksctl version
   create-deployment:
-    executor: aws-eks/python3
+    docker:
+      - image: python:3.9
     steps:
       - checkout
       - kubernetes/install
