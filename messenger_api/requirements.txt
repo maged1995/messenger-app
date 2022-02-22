@@ -11,4 +11,3 @@ django-environ
 boto3
 django-storages
 django-lint
-pylint
