@@ -1,20 +1,25 @@
-# version: 2.1
-
-# jobs:
-#   test-django-build:
-#     machine: true
-#     steps:
-#       - checkout
-#       - run: cp messenger_api/.env.sample messenger_api/.env
-#       - run: docker build -t company/app:$CIRCLE_BRANCH .
-
 version: 2.1
 
 orbs:
-  aws-eks: circleci/aws-eks@0.2.0
   kubernetes: circleci/kubernetes@0.3.0
+  python: circleci/python@1.1.0
 
 jobs:
+  test-lint:
+    executor: python/default
+    steps:
+      - checkout
+      - python/install-packages:
+          pip-dependency-file: messenger_api/requirements.txt
+          pkg-manager: pip
+      - python/install-packages:
+          args: pylint
+          pkg-manager: pip
+          pypi-cache: false
+      - run:
+          command: |
+            pylint messenger_api/
+          name: Test
   eksctl-install:
     docker:
       - image: amazon/aws-cli
@@ -24,21 +29,6 @@ jobs:
             curl --location "https://github.com/weaveworks/eksctl/releases/download/v0.73.0/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp
             sudo mv /tmp/eksctl /usr/local/bin
             eksctl version
-  test-cluster:
-    executor: aws-eks/python3
-    parameters:
-      cluster-name:
-        description: |
-          Name of the EKS cluster
-        type: string
-    steps:
-      - kubernetes/install
-      - aws-eks/update-kubeconfig-with-authenticator:
-          cluster-name: << parameters.cluster-name >>
-      - run:
-          command: |
-            kubectl get services
-          name: Test cluster
   create-deployment:
     executor: aws-eks/python3
     parameters:
@@ -51,77 +41,12 @@ jobs:
       - kubernetes/install
       - run:
           command: |
-            echo -n $DB_PORT > ./db-port.txt
-            echo -n $PG_DATABASE > ./pg-database.txt
-            echo -n $PG_PASSWORD > ./pg-password.txt
-            echo -n $PG_USER > ./pg-user.txt
-            echo -n $POSTGRES_DB > ./postgres-db.txt
-            echo -n $POSTGRES_PASSWORD > ./postgres-pass.txt
-            echo -n $POSTGRES_USER > ./postgres-user.txt
+            source $BASH_ENV
       - run:
           command: |
-            kubectl create secret generic messenger-secrets \
-              --from-file=./db-port.txt \
-              --from-file=./pg-database.txt \
-              --from-file=./pg-password.txt \
-              --from-file=./pg-user.txt \
-              --from-file=./postgres-db.txt \
-              --from-file=./postgres-pass.txt \
-              --from-file=./postgres-user.txt
-      - aws-eks/update-kubeconfig-with-authenticator:
-          cluster-name: << parameters.cluster-name >>
-          install-kubectl: true
-      - kubernetes/create-or-update-resource:
-          get-rollout-status: true
-          resource-file-path: postgres.yaml
-          resource-name: deployment/postgres-deployment
-      - kubernetes/create-or-update-resource:
-          get-rollout-status: true
-          resource-file-path: redis.yaml
-          resource-name: deployment/redis-deployment
-      - kubernetes/create-or-update-resource:
-          get-rollout-status: true
-          resource-file-path: messenger-configmap.yaml
-          resource-name: deployment/messenger-configmap
-      - kubernetes/create-or-update-resource:
-          get-rollout-status: true
-          resource-file-path: django.yaml
-          resource-name: deployment/django-deployment
+            ./createStagingCluster.sh
 
 workflows:
   test:
     jobs:
-      - aws-eks/create-cluster:
-          cluster-name: my-eks-messenger
-      - test-cluster:
-          cluster-name: my-eks-messenger
-          requires:
-            - aws-eks/create-cluster
-      - aws-eks/delete-cluster:
-          cluster-name: my-eks-messenger
-          requires:
-            - test-cluster
-  deployment:
-    jobs:
-      - aws-eks/create-cluster:
-          cluster-name: eks-messenger-deployment
-      - create-deployment:
-          cluster-name: eks-messenger-deployment
-          requires:
-            - aws-eks/create-cluster
-      - aws-eks/update-container-image:
-          cluster-name: eks-messenger-deployment
-          container-image-updates: "nginx=nginx:1.9.1"
-          post-steps:
-            - kubernetes/delete-resource:
-                resource-names: nginx-deployment
-                resource-types: deployment
-                wait: true
-          record: true
-          requires:
-            - create-deployment
-          resource-name: deployment/nginx-deployment
-      - aws-eks/delete-cluster:
-          cluster-name: eks-messenger-deployment
-          requires:
-            - aws-eks/update-container-image
+      - test-lint
