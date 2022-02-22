@@ -58,7 +58,7 @@ jobs:
       - kubernetes/install
       - run:
           command: |
-            sudo apt install -y tar gzip
+            sudo apt install -y tar gzip yq
             sudo snap install jq
       - run:
           command: |
