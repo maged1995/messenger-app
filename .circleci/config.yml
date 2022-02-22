@@ -5,17 +5,44 @@ orbs:
   python: circleci/python@1.1.0
 
 jobs:
+  # test-lint:
+  #   docker:
+  #     - image: python:3
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         command: |
+  #           apt-get update \
+  #             && apt-get install -y --no-install-recommends \
+  #                 postgresql-client \
+  #             && rm -rf /var/lib/apt/lists/*
+
+  #           python3 -m venv /opt/venv
+  #           PATH="$VIRTUAL_ENV/bin:$PATH"
+
+  #           pip install pipenv
+  #           pipenv install -r ./messenger_api/requirements.txt
+  #           pipenv run pylint messenger_api/*
+  #         name: Test
+
   test-lint:
     docker:
-      - image: python:3.11.0a5-alpine3.14
+      - image: python:3
     steps:
       - checkout
       - run:
           command: |
-            apk update && apk add postgresql-dev gcc python3-dev musl-dev
-            pip install pipenv
-            pipenv install -r ./messenger_api/requirements.txt
-            pipenv run pylint messenger_api/*
+            apt-get update \
+              && apt-get install -y --no-install-recommends \
+                  postgresql-client \
+              && rm -rf /var/lib/apt/lists/*
+
+            python3 -m venv /opt/venv
+            PATH="$VIRTUAL_ENV/bin:$PATH"
+            /opt/venv/bin/python3 -m pip install --upgrade pip
+
+            /opt/venv/bin/activate && pip install -r messenger_api/requirements.txt
+            pylint messenger_api/*
           name: Test
   eksctl-install:
     docker:
