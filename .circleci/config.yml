@@ -42,7 +42,7 @@ jobs:
             venv/bin/python3 -m pip install --upgrade pip
             . venv/bin/activate
             pip install -r messenger_api/requirements.txt
-            pip install pylint
+            pwd
             pylint messenger_api/*
           name: Test
   eksctl-install:
