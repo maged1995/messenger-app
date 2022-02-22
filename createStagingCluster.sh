@@ -18,8 +18,6 @@ BUCKET_NAME=${S3_BUCKET_NAME} yq -i '
   .stringData.aws-bucket-name = strenv(BUCKET_NAME)
   ' ./staging/messenger-secrets.yaml
 
-echo 'lol'
-
 if docker build -t django-app ./messenger_api | grep 'Successfully built'; then
   :
 else 
