@@ -12,10 +12,6 @@ jobs:
       - python/install-packages:
           pip-dependency-file: ./messenger_api/requirements.txt
           pkg-manager: pip
-      - python/install-packages:
-          args: pylint
-          pkg-manager: pip
-          pypi-cache: false
       - run:
           command: |
             pylint messenger_api/
