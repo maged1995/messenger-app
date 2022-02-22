@@ -14,7 +14,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import include, path
-from rest_framework import routers
 from messenger_app import views
 
 # router = routers.DefaultRouter()
@@ -29,5 +28,8 @@ urlpatterns = [
     path('chat/', views.ChatList.as_view(), name="chat-list"),
     path('chat/<int:pk>/', views.ChatView.as_view(), name="chat-detail"),
     path('message/', views.MessageList.as_view(), name="message-list"),
-    path('message/<int:pk>/', views.MessageView.as_view(), name="message-detail"),
+    path(
+        'message/<int:pk>/',
+        views.MessageView.as_view(),
+        name="message-detail"),
 ]
