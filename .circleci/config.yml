@@ -13,7 +13,7 @@ jobs:
       - run:
           command: |
             pip install pipenv
-            pipenv install -r ./messenger_api/requirements.txt
+            pipenv install pylint
             pipenv run pylint messenger_api/*
           name: Test
   eksctl-install:
