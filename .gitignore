@@ -1,5 +1,5 @@
 *.env
-*static/*
+*static*
 *migrations  
 *__pycache__
 venv
