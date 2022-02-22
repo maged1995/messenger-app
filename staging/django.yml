@@ -80,27 +80,42 @@ spec:
           valueFrom:
             secretKeyRef:
               name: messenger-secrets
-              key: pg-database
+              key: postgres-db
         - name: PGUSER
           valueFrom:
             secretKeyRef:
               name: messenger-secrets
-              key: pg-user
+              key: postgres-user
         - name: PGPASSWORD
           valueFrom:
             secretKeyRef:
               name: messenger-secrets
-              key: pg-password
+              key: postgres-pass
         - name: DB_PORT
           valueFrom:
             secretKeyRef:
               name: messenger-secrets
               key: db-port
+        - name: AWS_STORAGE_BUCKET_NAME
+          valueFrom:
+            secretKeyRef:
+              name: messenger-secrets
+              key: aws-bucket-name
         - name: DB_HOST
           valueFrom:
-            configMapKeyRef:
-              name: messenger-configmap
-              key: database_url
+            secretKeyRef:
+              name: messenger-secrets
+              key: postgres-host
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: messenger-secrets
+              key: aws-access-key-id
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: messenger-secrets
+              key: aws-secret-access-key
         - name: REDIS_URL
           valueFrom:
             configMapKeyRef:

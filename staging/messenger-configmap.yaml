@@ -3,5 +3,4 @@ kind: ConfigMap
 metadata:
   name: messenger-configmap
 data:
-  database_url: postgres-service
   redis_url: redis-service
