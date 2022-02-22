@@ -3,6 +3,7 @@ version: 2.1
 orbs:
   kubernetes: circleci/kubernetes@0.3.0
   python: circleci/python@1.1.0
+  jq: circleci/jq@2.2.0
 
 jobs:
   # test-lint:
@@ -47,24 +48,21 @@ jobs:
               exit 0
             fi
           name: Test
-  eksctl-install:
-    docker:
-      - image: amazon/aws-cli
+  create-deployment:
+    machine: true
+    # docker:
+    #   - image: python:3.9
     steps:
+      - checkout
+      - kubernetes/install
       - run:
           command: |
-            yum install -y tar gzip
+            yum install -y tar gzip jq
       - run:
           command: |
             curl --location "https://github.com/weaveworks/eksctl/releases/download/v0.73.0/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp
             mv /tmp/eksctl /usr/local/bin
             eksctl version
-  create-deployment:
-    docker:
-      - image: python:3.9
-    steps:
-      - checkout
-      - kubernetes/install
       # - run:
       #     command: |
       #       export $BASH_ENV
@@ -77,4 +75,5 @@ workflows:
     jobs:
       - test-lint
       - eksctl-install
-      - create-deployment
+      - create-deployment:
+          requires: [eksctl-install]
