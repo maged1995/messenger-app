@@ -13,8 +13,9 @@ jobs:
       - run:
           command: |
             apk update && apk add postgresql-dev gcc python3-dev musl-dev
-            pip install -r messenger_api/requirements.txt
-            pylint messenger_api/*
+            sudo pip install pipenv
+            pipenv install -r ./messenger_api/requirements.txt
+            pipenv run pylint messenger_api/*
           name: Test
   eksctl-install:
     docker:
