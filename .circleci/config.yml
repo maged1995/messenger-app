@@ -43,6 +43,7 @@ jobs:
             . venv/bin/activate
             pip install wheel
             pip install -r messenger_api/requirements.txt
+            pip install ast
             pip install pylint
             pylint messenger_api/*
           name: Test
