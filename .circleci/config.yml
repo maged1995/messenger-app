@@ -13,7 +13,7 @@ jobs:
       - run:
           command: |
             apk update && apk add postgresql-dev gcc python3-dev musl-dev
-            sudo pip install pipenv
+            pip install pipenv
             pipenv install -r ./messenger_api/requirements.txt
             pipenv run pylint messenger_api/*
           name: Test
