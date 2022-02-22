@@ -42,6 +42,7 @@ jobs:
             /opt/venv/bin/python3 -m pip install --upgrade pip
 
             /opt/venv/bin/activate && pip install -r messenger_api/requirements.txt
+            pip install pylint
             pylint messenger_api/*
           name: Test
   eksctl-install:
