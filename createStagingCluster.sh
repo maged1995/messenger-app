@@ -1,5 +1,7 @@
 #!/bin/bash
 
+docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASSWORD
+
 OWNER_ID=371713243830
 CREATION_DATE=$(date +"%y%m%d%H%M%S")
 STAGING_CLUSTER_NAME=stagingCluster-$CREATION_DATE
