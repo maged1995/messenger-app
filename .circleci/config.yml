@@ -37,11 +37,9 @@ jobs:
                   postgresql-client \
               && rm -rf /var/lib/apt/lists/*
 
-            python3 -m venv /opt/venv
-            PATH="$VIRTUAL_ENV/bin:$PATH"
-            /opt/venv/bin/python3 -m pip install --upgrade pip
-
+            python3 -m pip install --upgrade pip
             python3 -m venv venv
+
             . venv/bin/activate
             pip install -r messenger_api/requirements.txt
             pip install pylint
