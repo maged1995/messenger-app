@@ -7,7 +7,7 @@ orbs:
 jobs:
   test-lint:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: python:3.11.0a5-alpine3.14
     steps:
       - checkout
       - run:
