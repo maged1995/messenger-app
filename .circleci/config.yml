@@ -27,7 +27,7 @@ jobs:
 
   test-lint:
     docker:
-      - image: python:3
+      - image: python:3.9
     steps:
       - checkout
       - run:
@@ -41,9 +41,7 @@ jobs:
 
             venv/bin/python3 -m pip install --upgrade pip
             . venv/bin/activate
-            pip install wheel
             pip install -r messenger_api/requirements.txt
-            pip install ast==3.9
             pip install pylint
             pylint messenger_api/*
           name: Test
