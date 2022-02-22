@@ -41,7 +41,7 @@ jobs:
 
             venv/bin/python3 -m pip install --upgrade pip
             . venv/bin/activate
-            pip install –upgrade setuptools
+            pip install --upgrade setuptools
             pip install -r messenger_api/requirements.txt
             pip install ast
             pip install pylint
