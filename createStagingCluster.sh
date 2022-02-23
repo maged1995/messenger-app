@@ -125,7 +125,7 @@ fi
 
 NLB_STATE=$(aws elbv2 describe-load-balancers | jq -r '.LoadBalancers[] | select(.Scheme == "internet-facing") | .State.Code')
 
-while [ -z ! $NLB_STATE ]
+while [ $NLB_STATE ]
 do
   echo 'waiting for Network Load Balancer to be deleted'
   sleep 30s
