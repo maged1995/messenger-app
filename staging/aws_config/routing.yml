@@ -28,7 +28,7 @@ Resources:
       Scheme: internet-facing
       SubnetMappings:
         - SubnetId: !Sub "${SubnetId}"
-          AllocationId: eipalloc-078366305465776e1 ## must be moved to parameter
+          AllocationId: eipalloc-0868ca043d894d202 ## must be moved to parameter
       Type: network
   Listener:
     Type: "AWS::ElasticLoadBalancingV2::Listener"

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASSWORD
+
 OWNER_ID=371713243830
 CREATION_DATE=$(date +"%y%m%d%H%M%S")
 STAGING_CLUSTER_NAME=stagingCluster-$CREATION_DATE
@@ -17,8 +19,6 @@ BUCKET_NAME=${S3_BUCKET_NAME} yq -i '
   .stringData.aws-secret-access-key = strenv(ACCESS_KEY) |
   .stringData.aws-bucket-name = strenv(BUCKET_NAME)
   ' ./staging/messenger-secrets.yaml
-
-echo 'lol'
 
 if docker build -t django-app ./messenger_api | grep 'Successfully built'; then
   :
