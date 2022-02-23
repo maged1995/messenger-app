@@ -17,7 +17,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Chat',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('is_group', models.BooleanField()),
             ],
@@ -25,7 +26,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ChatUser',
             fields=[
-                ('user_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='auth.user')),
+                ('user_ptr',
+                 models.OneToOneField(auto_created=True,
+                                      on_delete=django.db.models.deletion.CASCADE,
+                                      parent_link=True,
+                                      primary_key=True,
+                                      serialize=False,
+                                      to='auth.user')),
                 ('user_image', models.ImageField(upload_to=None)),
             ],
             options={
@@ -41,19 +48,25 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ChatUserChat',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('chat', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='messenger_app.chat')),
-                ('chatuser', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='messenger_app.chatuser')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
+                ('chat', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='messenger_app.chat')),
+                ('chatuser', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='messenger_app.chatuser')),
             ],
         ),
         migrations.CreateModel(
             name='ChatMessage',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('message', models.TextField()),
-                ('chat', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='messenger_app.chat')),
-                ('chatuser', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='messenger_app.chatuser')),
+                ('chat', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='messenger_app.chat')),
+                ('chatuser', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='messenger_app.chatuser')),
             ],
         ),
     ]

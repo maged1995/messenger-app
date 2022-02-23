@@ -1,0 +1,65 @@
+Description: >
+  Maged A. Saad / Messenger 2021 Database
+
+Parameters:
+  ApplicationName:
+    Description: Name of the Database that comes from the application's name
+    Type: String
+  DBUsername:
+    Description: Database User's name
+    Type: String
+  DBPassword:
+    Description: Database User's password
+    Type: String
+  BucketName:
+    Description: Name of the Bucket
+    Type: String
+
+Resources:
+  DBSecurityGroup:
+    Type: AWS::RDS::DBSecurityGroup
+    Properties:
+      DBSecurityGroupIngress:
+        CIDRIP: 0.0.0.0/0
+      GroupDescription: "Database Access"
+  DBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceClass: db.m6g.large
+      Engine: postgres
+      EngineVersion: 12.8
+      DBName: !Sub "${ApplicationName}"
+      MasterUsername: !Sub "${DBUsername}"
+      MasterUserPassword: !Sub "${DBPassword}"
+      StorageType: gp2
+      AllocatedStorage: 20
+      PubliclyAccessible: true
+      DBSecurityGroups:
+        - Ref: "DBSecurityGroup"
+
+  WebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${BucketName}-bucket"
+      AccessControl: PublicReadWrite
+
+  WebsiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref "WebsiteBucket"
+      PolicyDocument:
+        Statement:
+          - Sid: AmazonS3FullAccess
+            Effect: Allow
+            Principal: "*"
+            Action: s3:GetObject
+            Resource: !Join ["", ["arn:aws:s3:::", !Ref "WebsiteBucket", /*]]
+
+Outputs:
+  WebAppDatabaseEndpoint:
+    Description: "Connection endpoint for the database"
+    Value: !GetAtt DBInstance.Endpoint.Address
+
+  WebsiteURL:
+    Value: !GetAtt WebsiteBucket.WebsiteURL
+    Description: URL for website hosted on S3

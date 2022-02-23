@@ -3,7 +3,8 @@ from rest_framework import serializers
 
 
 class ChatUserSerializer(serializers.HyperlinkedModelSerializer):
-    messages = serializers.HyperlinkedRelatedField(many=True, view_name='message-detail', read_only=True)
+    messages = serializers.HyperlinkedRelatedField(
+        many=True, view_name='message-detail', read_only=True)
 
     class Meta:
         model = ChatUser
@@ -17,15 +18,18 @@ class ChatSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ChatUserChatSerializer(serializers.HyperlinkedModelSerializer):
-    chatuser = serializers.HyperlinkedIdentityField(view_name='chatuser-detail', format='html')
-    
+    chatuser = serializers.HyperlinkedIdentityField(
+        view_name='chatuser-detail', format='html')
+
     class Meta:
         model = ChatUserChat
         fields = ['id', 'chatuser', 'chat']
 
 
 class MessageSerializer(serializers.HyperlinkedModelSerializer):
-    chatuser = serializers.HyperlinkedIdentityField(view_name='chatuser-detail', format='html')
+    chatuser = serializers.HyperlinkedIdentityField(
+        view_name='chatuser-detail', format='html')
+
     class Meta:
         model = Message
         fields = ['id', 'chatuser', 'message', 'chat']

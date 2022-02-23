@@ -1,0 +1,18 @@
+[
+  {
+    "ParameterKey": "ApplicationName",
+    "ParameterValue": "lol"
+  },
+  {
+    "ParameterKey": "DBUsername",
+    "ParameterValue": "Mag"
+  },
+  {
+    "ParameterKey": "DBPassword",
+    "ParameterValue": "12345678"
+  },
+  {
+    "ParameterKey": "BucketName",
+    "ParameterValue": "220222111316-lol"
+  }
+]

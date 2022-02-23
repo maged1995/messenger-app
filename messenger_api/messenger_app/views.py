@@ -3,6 +3,7 @@ from messenger_app.models import ChatUser
 from rest_framework import generics
 from messenger_app.serializers import *
 
+
 class UserList(generics.ListCreateAPIView):
     queryset = ChatUser.objects.all()
     serializer_class = ChatUserSerializer
@@ -11,6 +12,7 @@ class UserList(generics.ListCreateAPIView):
 class UserView(generics.RetrieveUpdateDestroyAPIView):
     queryset = ChatUser.objects.all()
     serializer_class = ChatUserSerializer
+
 
 class ChatList(generics.ListCreateAPIView):
     queryset = Chat.objects.all()
