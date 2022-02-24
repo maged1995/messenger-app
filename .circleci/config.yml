@@ -76,4 +76,5 @@ workflows:
   test:
     jobs:
       - test-lint
-      - create-deployment
+      - create-deployment:
+          requires: [test-lint]
