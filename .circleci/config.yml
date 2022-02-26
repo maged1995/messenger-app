@@ -48,7 +48,7 @@ jobs:
               exit 0
             fi
           name: Test
-  create-deployment:
+  deploy:
     machine:
       image: ubuntu-2004:202010-01
     # docker:
@@ -67,14 +67,14 @@ jobs:
             eksctl version
       # - run:
       #     command: |
-      #       export $BASH_ENV
+      #       ./createStagingCluster.sh
       - run:
           command: |
-            ./createStagingCluster.sh
+            ./deleteEarlyStagingCluster.sh
 
 workflows:
   test:
     jobs:
       - test-lint
-      - create-deployment:
+      - deploy:
           requires: [test-lint]
