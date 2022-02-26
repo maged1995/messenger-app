@@ -48,7 +48,7 @@ jobs:
               exit 0
             fi
           name: Test
-  create-deployment:
+  deploy:
     machine:
       image: ubuntu-2004:202010-01
     # docker:
@@ -71,10 +71,13 @@ jobs:
       - run:
           command: |
             ./createStagingCluster.sh
+      - run:
+          command: |
+            ./deleteEarlyStagingCluster.sh
 
 workflows:
   test:
     jobs:
       - test-lint
-      - create-deployment:
+      - deploy:
           requires: [test-lint]
