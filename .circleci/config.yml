@@ -67,10 +67,7 @@ jobs:
             eksctl version
       # - run:
       #     command: |
-      #       export $BASH_ENV
-      - run:
-          command: |
-            ./createStagingCluster.sh
+      #       ./createStagingCluster.sh
       - run:
           command: |
             ./deleteEarlyStagingCluster.sh
