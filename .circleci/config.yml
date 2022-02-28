@@ -68,9 +68,9 @@ jobs:
       - run:
           command: |
             ./createStagingCluster.sh
-      - run:
-          command: |
-            ./deleteEarlyStagingCluster.sh
+      # - run:
+      #     command: |
+      #       ./deleteEarlyStagingCluster.sh
 
 workflows:
   test:
