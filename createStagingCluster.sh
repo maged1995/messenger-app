@@ -32,7 +32,7 @@ docker image tag django-app maged1995/django-app:latest
 docker image push maged1995/django-app:$CREATION_DATE
 docker image push maged1995/django-app:latest
 
-eksctl create cluster --name $STAGING_CLUSTER_NAME --region us-east-1 --zones us-east-1a --nodegroup-name linux-nodes --node-type t2.medium --nodes 1
+eksctl create cluster --name $STAGING_CLUSTER_NAME --region us-east-1 --zones us-east-1a,us-east-1b,us-east-1c --nodegroup-name linux-nodes --node-type t2.medium --nodes 1
 
 FIRST_NODE_NAME=$(kubectl get nodes -o json | jq -r '.items[0].metadata.name')
 
