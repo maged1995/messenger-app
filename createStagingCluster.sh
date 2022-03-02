@@ -123,13 +123,13 @@ fi
 
 # wait for stack to finish deleting old network load balancer stack, if exists
 
-NLB_STATE=$(aws elbv2 describe-load-balancers | jq -r '.LoadBalancers[] | select(.Scheme == "internet-facing") | .State.Code')
+NETWORK_STACK=$(aws cloudformation describe-stacks | jq -r --arg STACK_NAME "$PROJECT_NAME-networking" '.Stacks[] | select(.StackName == $STACK_NAME) | .StackId')
 
-while [ $NLB_STATE ]
+while [ $NETWORK_STACK ]
 do
   echo 'waiting for Network Load Balancer to be deleted'
   sleep 30s
-  NLB_STATE=$(aws elbv2 describe-load-balancers | jq -r '.LoadBalancers[] | select(.Scheme == "internet-facing") | .State.Code')
+  NETWORK_STACK=$(aws cloudformation describe-stacks | jq -r --arg STACK_NAME "$PROJECT_NAME-networking" '.Stacks[] | select(.StackName == $STACK_NAME) | .StackId')
 done
 
 aws cloudformation deploy --template-file ./staging/aws_config/routing.yml --tags project=$PROJECT_NAME --stack-name "${PROJECT_NAME}-networking" --parameter-overrides file://staging/aws_config/routing.json
