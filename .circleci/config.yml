@@ -24,11 +24,11 @@ jobs:
       - run:
           command: |
             DATE_OF_PUSH=$(date +"%y.%m.%d-%H.%M.%S")
-            if docker build -t django-app . && ((! grep "")); then
+            if docker build -t django-app . && ((! grep "Successfully built")); then
               exit 1
             fi
 
-            if docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD && ((! grep "")); then
+            if docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD && ((! grep "Login Succeeded")); then
               exit 1
             fi
             docker image tag django-app maged1995/django-app:latest
