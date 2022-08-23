@@ -1,6 +1,6 @@
 *.env
 *static*
 *migrations  
-*__pycache__
+*__pycache__*
 venv
 messenger_api/db_data

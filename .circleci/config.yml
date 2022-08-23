@@ -6,6 +6,34 @@ orbs:
   jq: circleci/jq@2.2.0
 
 jobs:
+
+  eksctl-install:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - run:
+          command: |
+            curl --location "https://github.com/weaveworks/eksctl/releases/download/v0.73.0/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp
+            sudo mv /tmp/eksctl /usr/local/bin
+            eksctl version
+  update-docker:
+    machine: true
+    working_directory: ~/my_app
+    steps:
+      - run:
+          command: |
+            DATE_OF_PUSH=$(date +"%y.%m.%d-%H.%M.%S")
+            if docker build -t django-app . && ((! grep "")); then
+              exit 1
+            fi
+
+            if docker login -u $DOCKER_USER -p $DOCKER_PASS && ((! grep "")); then
+              exit 1
+            fi
+            docker image tag django-app maged1995/django-app:latest
+            docker image tag django-app maged1995/django-app:$DATE_OF_PUSH
+            docker image push maged1995/django-app:latest
+            docker image push maged1995/django-app:$DATE_OF_PUSH
   # test-lint:
   #   docker:
   #     - image: python:3
@@ -75,6 +103,7 @@ jobs:
 workflows:
   test:
     jobs:
-      - test-lint
-      - deploy:
-          requires: [test-lint]
+      - update-docker
+      # - test-lint
+      # - deploy:
+      #     requires: [test-lint]

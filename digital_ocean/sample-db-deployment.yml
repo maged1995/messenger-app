@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: do-kubernetes-sample-db
+  namespace: default
+  labels:
+    app: do-kubernetes-sample-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: do-kubernetes-sample-db
+  template:
+    metadata:
+      labels:
+        app: do-kubernetes-sample-db
+    spec:
+      containers:
+        - name: do-kubernetes-sample-db
+          image: postgres:13.3
+          # volumeMounts:
+          #   - name: django-static-data
+          #     mountPath: /app/static
+          #     subPath: django_files
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: messenger-secrets
+                  key: postgres-db
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: messenger-secrets
+                  key: postgres-user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: messenger-secrets
+                  key: postgres-pass
+            - name: PGDATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: messenger-secrets
+                  key: postgres-db
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: messenger-secrets
+                  key: postgres-user
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: messenger-secrets
+                  key: postgres-pass
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: messenger-configmap
+                  key: database_url
+            # - name: REDIS_URL
+            #   valueFrom:
+            #     configMapKeyRef:
+            #       name: messenger-configmap
+            #       key: redis_url
+      imagePullSecrets:
+        - name: myregistrykey
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: do-kubernetes-sample-db
+  namespace: default
+  labels:
+    app: do-kubernetes-sample-db
+spec:
+  selector:
+    app: postgres
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+  selector:
+    app: do-kubernetes-sample-db

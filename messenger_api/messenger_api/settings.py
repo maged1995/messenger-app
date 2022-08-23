@@ -144,7 +144,7 @@ USE_TZ = True
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
-if env("PYTHON_ENV") == 'developmnet':
+if env("PYTHON_ENV") == 'development':
     STATIC_URL = '/static/'
 
     STATICFILES_DIRS = [
