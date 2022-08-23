@@ -20,6 +20,7 @@ jobs:
     machine: true
     working_directory: ~/my_app
     steps:
+      - checkout
       - run:
           command: |
             DATE_OF_PUSH=$(date +"%y.%m.%d-%H.%M.%S")
@@ -101,9 +102,9 @@ jobs:
       #       ./deleteEarlyStagingCluster.sh
 
 workflows:
-  test:
+  update-image:
     jobs:
-      - update-docker
+      - update-image
       # - test-lint
       # - deploy:
       #     requires: [test-lint]
