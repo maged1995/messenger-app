@@ -28,7 +28,7 @@ jobs:
               exit 1
             fi
 
-            if docker login -u $DOCKER_USER -p $DOCKER_PASS && ((! grep "")); then
+            if docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD && ((! grep "")); then
               exit 1
             fi
             docker image tag django-app maged1995/django-app:latest
