@@ -1,0 +1,2 @@
+doctl kubernetes cluster delete $PROJECT_NAME-blue --access-token $DIGITALOCEAN_ACCESS_TOKEN --force
+doctl kubernetes cluster delete $PROJECT_NAME-green --access-token $DIGITALOCEAN_ACCESS_TOKEN --force

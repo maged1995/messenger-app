@@ -1,0 +1,58 @@
+version: 2.1
+
+orbs:
+  kubernetes: circleci/kubernetes@0.3.0
+  python: circleci/python@1.1.0
+  jq: circleci/jq@2.2.0
+
+jobs:
+  test-lint:
+    docker:
+      - image: python:3.9
+    steps:
+      - checkout
+      - run:
+          command: |
+            apt-get update \
+              && apt-get install -y --no-install-recommends \
+                  postgresql-client \
+              && rm -rf /var/lib/apt/lists/*
+            python3 -m venv venv
+            venv/bin/python3 -m pip install --upgrade pip
+            . venv/bin/activate
+            pip install -r messenger_api/requirements.txt
+            pip install pylint --upgrade
+            if pylint messenger_api/* | grep 'Your code has been rated at '; then
+              exit 0
+            fi
+          name: Test
+  deploy:
+    machine:
+      image: ubuntu-2004:202010-01
+    # docker:
+    #   - image: python:3.9
+    steps:
+      - checkout
+      - kubernetes/install
+      - run:
+          command: |
+            sudo apt install -y tar gzip
+            sudo snap install jq yq
+      - run:
+          command: |
+            curl --location "https://github.com/weaveworks/eksctl/releases/download/v0.73.0/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp
+            sudo mv /tmp/eksctl /usr/local/bin
+            eksctl version
+      - run:
+          command: |
+            ./createStagingCluster.sh
+      # - run:
+      #     command: |
+      #       ./deleteEarlyStagingCluster.sh
+
+workflows:
+  test:
+    jobs:
+      - test-lint
+      - deploy:
+          requires: [test-lint]

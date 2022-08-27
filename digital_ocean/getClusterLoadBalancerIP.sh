@@ -1,0 +1,1 @@
+kubectl get svc do-kubernetes-sample-app -o json | jq -r .status.loadBalancer.ingress[0].ip

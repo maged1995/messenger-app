@@ -1,0 +1,2 @@
+doctl kubernetes cluster create $PROJECT_NAME-blue --access-token $DIGITALOCEAN_ACCESS_TOKEN --tag do-tutorial --auto-upgrade=true --node-pool "name=mypool;count=2;auto-scale=true;min-nodes=1;max-nodes=3;tag=do-tutorial"
+doctl kubernetes cluster create $PROJECT_NAME-green --access-token $DIGITALOCEAN_ACCESS_TOKEN --tag do-tutorial --auto-upgrade=true --node-pool "name=mypool;count=2;auto-scale=true;min-nodes=1;max-nodes=3;tag=do-tutorial"

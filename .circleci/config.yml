@@ -7,54 +7,6 @@ orbs:
 
 jobs:
 
-  eksctl-install:
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      - run:
-          command: |
-            curl --location "https://github.com/weaveworks/eksctl/releases/download/v0.73.0/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp
-            sudo mv /tmp/eksctl /usr/local/bin
-            eksctl version
-  update-image:
-    machine: true
-    working_directory: ~/my_app
-    steps:
-      - checkout
-      - run:
-          command: |
-            DATE_OF_PUSH=$(date +"%y.%m.%d-%H.%M.%S")
-            if docker build -t django-app . && ((! grep "Successfully built")); then
-              exit 1
-            fi
-
-            if docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD && ((! grep "Login Succeeded")); then
-              exit 1
-            fi
-            docker image tag django-app maged1995/django-app:latest
-            docker image tag django-app maged1995/django-app:$DATE_OF_PUSH
-            docker image push maged1995/django-app:latest
-            docker image push maged1995/django-app:$DATE_OF_PUSH
-  # test-lint:
-  #   docker:
-  #     - image: python:3
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         command: |
-  #           apt-get update \
-  #             && apt-get install -y --no-install-recommends \
-  #                 postgresql-client \
-  #             && rm -rf /var/lib/apt/lists/*
-
-  #           python3 -m venv /opt/venv
-  #           PATH="$VIRTUAL_ENV/bin:$PATH"
-
-  #           pip install pipenv
-  #           pipenv install -r ./messenger_api/requirements.txt
-  #           pipenv run pylint messenger_api/*
-  #         name: Test
-
   test-lint:
     docker:
       - image: python:3.9
@@ -77,11 +29,30 @@ jobs:
               exit 0
             fi
           name: Test
+
+  update-image:
+    machine: true
+    working_directory: ~/my_app
+    steps:
+      - checkout
+      - run:
+          command: |
+            DATE_OF_PUSH=$(date +"%y.%m.%d-%H.%M.%S")
+            if docker build -t django-app . && ((! grep "Successfully built")); then
+              exit 1
+            fi
+
+            if docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD && ((! grep "Login Succeeded")); then
+              exit 1
+            fi
+            docker image tag django-app maged1995/django-app:latest
+            docker image tag django-app maged1995/django-app:$DATE_OF_PUSH
+            docker image push maged1995/django-app:latest
+            docker image push maged1995/django-app:$DATE_OF_PUSH
+
   deploy:
     machine:
       image: ubuntu-2004:202010-01
-    # docker:
-    #   - image: python:3.9
     steps:
       - checkout
       - kubernetes/install
@@ -89,13 +60,16 @@ jobs:
           command: |
             sudo apt install -y tar gzip
             sudo snap install jq yq
+            sudo snap install doctl
       - run:
           command: |
-            curl --location "https://github.com/weaveworks/eksctl/releases/download/v0.73.0/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp
-            sudo mv /tmp/eksctl /usr/local/bin
-            eksctl version
-      - run:
-          command: |
+            if doctl kubernetes cluster get messenger-app-green --format Tags --access-token $DIGITALOCEAN_ACCESS_TOKEN | grep "production"; then
+              TARGET_CLUSTER=green
+            else 
+              TARGET_CLUSTER=blue
+            fi
+            
+            TARGET_CLUSTER=messenger-app-$TARGET_CLUSTER
             ./createStagingCluster.sh
       # - run:
       #     command: |
