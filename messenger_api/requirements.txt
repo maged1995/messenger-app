@@ -8,3 +8,6 @@ django-debug-toolbar
 redis
 psycopg2
 django-environ
+boto3
+django-storages
+django-lint

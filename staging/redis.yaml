@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: redis-storage
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/data"
+    type: DirectoryOrCreate
+  persistentVolumeReclaimPolicy: Retain
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-pvc
+spec:
+  storageClassName: redis-storage
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+status: {}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis-deployment
+  labels:
+    app: redis
+spec:
+  volumes:
+    - name: redis-volume-mount
+      persistentVolumeClaim:
+        claimName: redis-pvc
+  containers:
+    - name: redis
+      image: redis:3.2.0
+      volumeMounts:
+        - name: redis-volume-mount
+          mountPath: /var/lib/postgresql/data
+          subPath: redis_data
+      imagePullPolicy: Always
+      resources:
+      ports:
+        - containerPort: 6378
+  nodeSelector:
+    server-name: serverA
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+spec:
+  selector:
+    app: redis
+  ports:
+    - port: 6378
+      targetPort: 6378

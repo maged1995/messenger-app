@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "SubnetId",
+    "ParameterValue": "<SubnetId>"
+  },
+  {
+    "ParameterKey": "VpcId",
+    "ParameterValue": "<VpcId>"
+  },
+  {
+    "ParameterKey": "LoadBalancerARN",
+    "ParameterValue": "<LoadBalancerARN>"
+  }
+]

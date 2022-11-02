@@ -12,6 +12,7 @@ spec:
     - ReadWriteMany
   hostPath:
     path: "/var/lib/postgresql/data"
+    type: DirectoryOrCreate
   persistentVolumeReclaimPolicy: Retain
 ---
 apiVersion: v1
@@ -44,16 +45,16 @@ spec:
         app: postgres
     spec:
       volumes:
-      - name: postgres-volume-mount
-        persistentVolumeClaim:
-          claimName: postgres-pvc
+        - name: postgres-volume-mount
+          persistentVolumeClaim:
+            claimName: postgres-pvc
       containers:
         - name: postgres
           image: postgres:13.3
           volumeMounts:
-          - name: postgres-volume-mount
-            mountPath: /var/lib/postgresql/data
-            subPath: db_data
+            - name: postgres-volume-mount
+              mountPath: /var/lib/postgresql/data
+              subPath: db_data
           imagePullPolicy: Always
           resources:
           ports:
@@ -107,4 +108,3 @@ spec:
     - protocol: TCP
       port: 5432
       targetPort: 5432
-
