@@ -32,7 +32,7 @@ docker image tag django-app maged1995/django-app:latest
 docker image push maged1995/django-app:$CREATION_DATE
 docker image push maged1995/django-app:latest
 
-eksctl create cluster --name $STAGING_CLUSTER_NAME --region us-east-1 --nodegroup-name linux-nodes --node-type t2.medium --nodes 1
+eksctl create cluster --name $STAGING_CLUSTER_NAME --region us-east-1 --zones us-east-1a,us-east-1b,us-east-1c --nodegroup-name linux-nodes --node-type t2.medium --nodes 1
 
 FIRST_NODE_NAME=$(kubectl get nodes -o json | jq -r '.items[0].metadata.name')
 
@@ -123,13 +123,13 @@ fi
 
 # wait for stack to finish deleting old network load balancer stack, if exists
 
-NLB_STATE=$(aws elbv2 describe-load-balancers | jq -r '.LoadBalancers[] | select(.Scheme == "internet-facing") | .State.Code')
+NETWORK_STACK=$(aws cloudformation describe-stacks | jq -r --arg STACK_NAME "$PROJECT_NAME-networking" '.Stacks[] | select(.StackName == $STACK_NAME) | .StackId')
 
-while [ $NLB_STATE ]
+while [ $NETWORK_STACK ]
 do
   echo 'waiting for Network Load Balancer to be deleted'
   sleep 30s
-  NLB_STATE=$(aws elbv2 describe-load-balancers | jq -r '.LoadBalancers[] | select(.Scheme == "internet-facing") | .State.Code')
+  NETWORK_STACK=$(aws cloudformation describe-stacks | jq -r --arg STACK_NAME "$PROJECT_NAME-networking" '.Stacks[] | select(.StackName == $STACK_NAME) | .StackId')
 done
 
 aws cloudformation deploy --template-file ./staging/aws_config/routing.yml --tags project=$PROJECT_NAME --stack-name "${PROJECT_NAME}-networking" --parameter-overrides file://staging/aws_config/routing.json

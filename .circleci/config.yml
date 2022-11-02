@@ -48,7 +48,7 @@ jobs:
               exit 0
             fi
           name: Test
-  create-deployment:
+  deploy:
     machine:
       image: ubuntu-2004:202010-01
     # docker:
@@ -65,16 +65,16 @@ jobs:
             curl --location "https://github.com/weaveworks/eksctl/releases/download/v0.73.0/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp
             sudo mv /tmp/eksctl /usr/local/bin
             eksctl version
-      # - run:
-      #     command: |
-      #       export $BASH_ENV
       - run:
           command: |
             ./createStagingCluster.sh
+      # - run:
+      #     command: |
+      #       ./deleteEarlyStagingCluster.sh
 
 workflows:
   test:
     jobs:
       - test-lint
-      - create-deployment:
+      - deploy:
           requires: [test-lint]
